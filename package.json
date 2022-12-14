@@ -18,6 +18,7 @@
   "type": "module",
   "homepage": "https://github.com/PaulKinlan/button-and-link-scraper#readme",
   "dependencies": {
-    "puppeteer": "^19.4.0"
+    "puppeteer": "^19.4.0",
+    "uuid": "^9.0.0"
   }
 }

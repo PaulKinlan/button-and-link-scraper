@@ -1,33 +1,57 @@
-import puppeteer from 'puppeteer';
+import puppeteer from "puppeteer";
+import { v4 as uuidv4 } from 'uuid';
 
-(async () => {
-  const browser = await puppeteer.launch();
+
+async function navigate(browser, url) {
   const page = await browser.newPage();
+  await page.goto(url, { waitUntil: "networkidle2" });
+  return page;
+}
 
-  await page.goto('https://developers.google.com/web/');
-
-  // Type into search box.
-  await page.type('.devsite-search-field', 'Headless Chrome');
-
-  // Wait for suggest overlay to appear and click "show all results".
-  const allResultsSelector = '.devsite-suggest-all-results';
-  await page.waitForSelector(allResultsSelector);
-  await page.click(allResultsSelector);
-
-  // Wait for the results page to load and display the results.
-  const resultsSelector = '.gsc-results .gs-title';
-  await page.waitForSelector(resultsSelector);
-
+async function extractLinks(page) {
   // Extract the results from the page.
-  const links = await page.evaluate(resultsSelector => {
-    return [...document.querySelectorAll(resultsSelector)].map(anchor => {
-      const title = anchor.textContent.split('|')[0].trim();
-      return `${title} - ${anchor.href}`;
-    });
-  }, resultsSelector);
+  const anchors = await page.$$("a");
+  const output = [];
 
-  // Print all the files.
-  console.log(links.join('\n'));
+  for (const anchor of anchors) {
+    output.push([await anchor.screenshot({ path: `./images/links/${uuidv4()}.png`})]);
+  }
 
-  await browser.close();
-})();
+  return output;
+}
+
+async function extractButtons(page) {
+  const buttons = await page.$$(
+    "button, input[type='button'], input[type='submit'] "
+  );
+  const output = [];
+
+  for (const button of buttons) {
+    output.push([await button.screenshot({ path: `./images/buttons/${uuidv4()}.png`})]);
+  }
+
+  return output;
+}
+
+async function get(urls = [], browser) {
+  const results = { allButtons: {}, allLinks: {} };
+  for (const url of urls) {
+    const page = await navigate(browser, url);
+    results.allButtons[url] = await extractButtons(page);
+    results.allLinks[url] = await extractLinks(page);
+    page.close();
+  }
+  return results;
+}
+
+async function init() {
+  const browser = await puppeteer.launch();
+
+  const results = await get(["https://paul.kinlan.me/"], browser);
+
+  browser.close();
+
+  return "done";
+}
+
+init().then(console.log());
