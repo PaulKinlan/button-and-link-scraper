@@ -10,7 +10,7 @@ async function navigate(browser, url) {
 
 async function extractLinks(page) {
   // Extract the results from the page.
-  const anchors = await page.$$("a");
+  const anchors = await page.$$("a:not(:has(img))"); // text links...
   const output = [];
 
   for (const anchor of anchors) {
@@ -47,7 +47,7 @@ async function get(urls = [], browser) {
 async function init() {
   const browser = await puppeteer.launch();
 
-  const results = await get(["https://paul.kinlan.me/"], browser);
+  const results = await get(["https://www.eurosport.fr/"], browser);
 
   browser.close();
 

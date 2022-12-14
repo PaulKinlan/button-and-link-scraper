@@ -1,0 +1,1 @@
+A directory that contains examples of links that can be used in the validation of the model.
