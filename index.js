@@ -1,6 +1,5 @@
 import puppeteer from "puppeteer";
-import { v4 as uuidv4 } from 'uuid';
-
+import { v4 as uuidv4 } from "uuid";
 
 async function navigate(browser, url) {
   const page = await browser.newPage();
@@ -14,7 +13,20 @@ async function extractLinks(page) {
   const output = [];
 
   for (const anchor of anchors) {
-    output.push([await anchor.screenshot({ path: `./images/links/${uuidv4()}.png`})]);
+    const bounding = await anchor.boundingBox();
+    if (bounding != null) {
+      const rect = await page.evaluate((el) => {
+        const { x, y, width, height } = el.getBoundingClientRect();
+        return { x, y, width, height };
+      }, anchor);
+
+      output.push([
+        await page.screenshot({
+          clip: rect,
+          path: `./images/links/${uuidv4()}.png`,
+        }),
+      ]);
+    }
   }
 
   return output;
@@ -27,7 +39,20 @@ async function extractButtons(page) {
   const output = [];
 
   for (const button of buttons) {
-    output.push([await button.screenshot({ path: `./images/buttons/${uuidv4()}.png`})]);
+    const bounding = await button.boundingBox();
+    if (bounding != null) {
+      const rect = await page.evaluate((el) => {
+        const { x, y, width, height } = el.getBoundingClientRect();
+        return { x, y, width, height };
+      }, button);
+
+      output.push([
+        await page.screenshot({
+          clip: rect,
+          path: `./images/buttons/${uuidv4()}.png`,
+        }),
+      ]);
+    }
   }
 
   return output;
@@ -39,7 +64,7 @@ async function get(urls = [], browser) {
     const page = await navigate(browser, url);
     results.allButtons[url] = await extractButtons(page);
     results.allLinks[url] = await extractLinks(page);
-    page.close();
+    await page.close();
   }
   return results;
 }
