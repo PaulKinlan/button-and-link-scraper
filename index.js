@@ -17,7 +17,7 @@ async function extractLinks(page) {
     if (bounding != null) {
       const rect = await page.evaluate((el) => {
         const { x, y, width, height } = el.getBoundingClientRect();
-        return { x, y, width, height };
+        return { x: x - 10, y: y - 10, width: width + 20, height: height + 20 };
       }, anchor);
 
       output.push([
@@ -43,7 +43,7 @@ async function extractButtons(page) {
     if (bounding != null) {
       const rect = await page.evaluate((el) => {
         const { x, y, width, height } = el.getBoundingClientRect();
-        return { x, y, width, height };
+        return { x: x - 10, y: y - 10, width: width + 20, height: height + 20  }; // w + h + 20 because x and y are -10
       }, button);
 
       output.push([
@@ -72,7 +72,7 @@ async function get(urls = [], browser) {
 async function init() {
   const browser = await puppeteer.launch();
 
-  const results = await get(["https://www.eurosport.fr/"], browser);
+  const results = await get(["https://paul.kinlan.me/"], browser);
 
   browser.close();
 
