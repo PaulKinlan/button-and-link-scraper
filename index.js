@@ -22,7 +22,7 @@ async function extractLinks(page) {
 
 async function extractButtons(page) {
   const buttons = await page.$$(
-    "button, input[type='button'], input[type='submit'] "
+    "button, input[type='button'], input[type='submit'], input[type='reset'] "
   );
   const output = [];
 
