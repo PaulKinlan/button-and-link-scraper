@@ -1,0 +1,23 @@
+{
+  "name": "button-and-link-scraper",
+  "version": "1.0.0",
+  "description": "Scrapes buttons and links to help train ML",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PaulKinlan/button-and-link-scraper.git"
+  },
+  "author": "Paul Kinlan",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/PaulKinlan/button-and-link-scraper/issues"
+  },
+  "type": "module",
+  "homepage": "https://github.com/PaulKinlan/button-and-link-scraper#readme",
+  "dependencies": {
+    "puppeteer": "^19.4.0"
+  }
+}
