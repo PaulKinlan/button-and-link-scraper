@@ -40,7 +40,7 @@ async function extractLinks(page) {
         );
 
         // We only want the link where it is in the chain of elements. (likely visible from the current point.)
-        if (elements.indexOf(el) > -1) {
+        if (elements.indexOf(el) == 0) { // > -1
           return {
             x: Math.max(window.scrollX + x - 10, 0),
             y: Math.max(window.scrollY + y - 10, 0),
@@ -54,12 +54,23 @@ async function extractLinks(page) {
 
       if (rect.width == 0 || rect.height == 0) continue; // skip small links (like the ones in the footer) - 50 because we added 20 to the width and height and 30 is probably the smallest link
 
+      const uuid = uuidv4();
       output.push([
         await page.screenshot({
           clip: rect,
-          path: `./data/images/links/${uuidv4()}.png`,
+          path: `./data/images/links/${uuid}.png`,
         }),
       ]);
+
+      await anchor.hover();
+
+      output.push([
+        await page.screenshot({
+          clip: rect,
+          path: `./data/images/links/${uuid}-hover.png`,
+        }),
+      ]);
+
     }
   }
 
@@ -103,10 +114,20 @@ async function extractButtons(page) {
 
       if (rect.width == 0 || rect.height == 0) continue; // skip small buttons (like the ones in the footer
 
+      const uuid = uuidv4();
       output.push([
         await page.screenshot({
           clip: rect,
-          path: `./data/images/buttons/${uuidv4()}.png`,
+          path: `./data/images/buttons/${uuid}.png`,
+        }),
+      ]);
+
+      await button.hover();
+
+      output.push([
+        await page.screenshot({
+          clip: rect,
+          path: `./data/images/buttons/${uuid}-hover.png`,
         }),
       ]);
     }
@@ -119,7 +140,7 @@ async function get(urls = [], browser) {
   const results = { allButtons: {}, allLinks: {} };
   for (let urlIdx = 0; urlIdx < urls.length; urlIdx++) {
     const url = urls[urlIdx];
-    log(`Fetching ${urlIdx + 1}/${urls.length + 1} ${url}`);
+    log(`Fetching ${urlIdx + 1}/${urls.length} ${url}`);
 
     const page = await navigate(browser, url);
 
