@@ -19,8 +19,6 @@ https://classless-css-demo.deno.dev/sakura.html
 https://classless-css-demo.deno.dev/simple.html
 https://classless-css-demo.deno.dev/stylize.html
 https://classless-css-demo.deno.dev/tacit.html
-https://classless-css-demo.deno.dev/tachyons.html
-https://classless-css-demo.deno.dev/tailwind.html
 https://classless-css-demo.deno.dev/tufte.html
 https://classless-css-demo.deno.dev/water.html
 https://classless-css-demo.deno.dev/wing.html
