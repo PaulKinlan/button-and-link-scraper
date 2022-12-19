@@ -1,4 +1,5 @@
 import puppeteer from "puppeteer";
+import minimist from "minimist";  
 import { v4 as uuidv4 } from "uuid";
 
 async function navigate(browser, url) {
@@ -60,7 +61,9 @@ async function extractButtons(page) {
 
 async function get(urls = [], browser) {
   const results = { allButtons: {}, allLinks: {} };
-  for (const url of urls) {
+  for (let urlIdx = 0; urlIdx < urls.length; urlIdx++) {
+    const url = urls[urlIdx];
+    console.log(`Fetching ${urlIdx +1 }/${urls.length + 1} ${url}`);
     const page = await navigate(browser, url);
     results.allButtons[url] = await extractButtons(page);
     results.allLinks[url] = await extractLinks(page);
@@ -69,14 +72,16 @@ async function get(urls = [], browser) {
   return results;
 }
 
-async function init() {
+async function init(urls) {
   const browser = await puppeteer.launch();
 
-  const results = await get(["https://paul.kinlan.me/"], browser);
+  const results = await get(urls, browser);
 
   browser.close();
 
   return "done";
 }
 
-init().then(console.log());
+const args = minimist(process.argv.slice(2));
+
+init(args.url).then(console.log());
