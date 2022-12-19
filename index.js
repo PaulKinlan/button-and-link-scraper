@@ -8,9 +8,9 @@ async function navigate(browser, url) {
   const page = await browser.newPage();
   try {
     await page.goto(url, { waitUntil: "networkidle2" });
-    
-    //page.on("console", (msg) => console.log(msg.text()));
-    page.addStyleTag({ content: "* { scroll-behavior: auto !important;}" });
+
+    // page.on("console", (msg) => console.log(msg.text()));
+    page.addStyleTag({ content: "* { scroll-behavior: auto !important; }" });
 
     return page;
   } catch (e) {
@@ -28,7 +28,11 @@ async function extractLinks(page) {
     const bounding = await anchor.boundingBox();
     if (bounding != null) {
       const rect = await page.evaluate((el) => {
-        el.scrollIntoView({ behavior: "auto" });
+        el.scrollIntoView({
+          behavior: "auto",
+          block: "center",
+          inline: "center",
+        });
         const { x, y, width, height } = el.getBoundingClientRect();
         const elements = document.elementsFromPoint(
           x + width / 2,
@@ -71,7 +75,11 @@ async function extractButtons(page) {
     const bounding = await button.boundingBox();
     if (bounding != null) {
       const rect = await page.evaluate((el) => {
-        el.scrollIntoView({ behavior: "auto" });
+        el.scrollIntoView({
+          behavior: "auto",
+          block: "center",
+          inline: "center",
+        }); // reduce the chance of position: fixed elements blocking this element.
         const { x, y, width, height } = el.getBoundingClientRect();
         const element = document.elementFromPoint(
           x + width / 2,
