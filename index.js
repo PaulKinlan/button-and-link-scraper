@@ -8,6 +8,10 @@ async function navigate(browser, url) {
   const page = await browser.newPage();
   try {
     await page.goto(url, { waitUntil: "networkidle2" });
+    
+    //page.on("console", (msg) => console.log(msg.text()));
+    page.addStyleTag({ content: "* { scroll-behavior: auto !important;}" });
+
     return page;
   } catch (e) {
     if (page != null) page.close();
@@ -24,17 +28,18 @@ async function extractLinks(page) {
     const bounding = await anchor.boundingBox();
     if (bounding != null) {
       const rect = await page.evaluate((el) => {
+        el.scrollIntoView({ behavior: "auto" });
         const { x, y, width, height } = el.getBoundingClientRect();
         const elements = document.elementsFromPoint(
-          x + (width / 2),
-          y + (height / 2)
+          x + width / 2,
+          y + height / 2
         );
 
-        // We only want the link where it is in the chanin of elements. (likely visibile from the current point.)
+        // We only want the link where it is in the chain of elements. (likely visible from the current point.)
         if (elements.indexOf(el) > -1) {
           return {
-            x: x - 10,
-            y: y - 10,
+            x: Math.max(window.scrollX + x - 10, 0),
+            y: Math.max(window.scrollY + y - 10, 0),
             width: width + 20,
             height: height + 20,
           };
@@ -43,7 +48,7 @@ async function extractLinks(page) {
         return { width: 0, height: 0 };
       }, anchor);
 
-      if (rect.width < 50 || rect.height < 50) continue; // skip small links (like the ones in the footer) - 50 because we added 20 to the width and height and 30 is probably the smallest link
+      if (rect.width == 0 || rect.height == 0) continue; // skip small links (like the ones in the footer) - 50 because we added 20 to the width and height and 30 is probably the smallest link
 
       output.push([
         await page.screenshot({
@@ -62,22 +67,24 @@ async function extractButtons(page) {
     "button, input[type='button'], input[type='submit'], input[type='reset']"
   );
   const output = [];
-
   for (const button of buttons) {
     const bounding = await button.boundingBox();
     if (bounding != null) {
       const rect = await page.evaluate((el) => {
+        el.scrollIntoView({ behavior: "auto" });
         const { x, y, width, height } = el.getBoundingClientRect();
         const element = document.elementFromPoint(
-          x + (width / 2),
-          y + (height / 2)
+          x + width / 2,
+          y + height / 2
         );
+
+        console.log(x, y, width, height, element, el);
 
         // We only want the button where it is clearly the top level element.
         if (element == el) {
           return {
-            x: x - 10,
-            y: y - 10,
+            x: Math.max(window.scrollX + x - 10, 0),
+            y: Math.max(window.scrollY + y - 10, 0),
             width: width + 20,
             height: height + 20,
           };
@@ -86,7 +93,7 @@ async function extractButtons(page) {
         return { width: 0, height: 0 };
       }, button);
 
-      if (rect.width < 50 || rect.height < 50) continue; // skip small buttons (like the ones in the footer
+      if (rect.width == 0 || rect.height == 0) continue; // skip small buttons (like the ones in the footer
 
       output.push([
         await page.screenshot({
@@ -121,18 +128,16 @@ async function get(urls = [], browser) {
         console.log(`url ${url} failed with error ${e}`);
       }
       await page.close();
-    }
-    else {
+    } else {
       log(`. Failed.`);
       console.log(`url ${url} failed`);
     }
-
   }
   return results;
 }
 
 async function init(urls) {
-  const browser = await puppeteer.launch();
+  const browser = await puppeteer.launch({ devtools: false });
 
   const results = await get(urls, browser);
 
