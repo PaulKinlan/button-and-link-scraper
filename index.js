@@ -2,6 +2,8 @@ import puppeteer from "puppeteer";
 import minimist from "minimist";  
 import { v4 as uuidv4 } from "uuid";
 
+const log = (str) => process.stdout.write(str);
+
 async function navigate(browser, url) {
   const page = await browser.newPage();
   await page.goto(url, { waitUntil: "networkidle2" });
@@ -24,7 +26,7 @@ async function extractLinks(page) {
       output.push([
         await page.screenshot({
           clip: rect,
-          path: `./images/links/${uuidv4()}.png`,
+          path: `./data/images/links/${uuidv4()}.png`,
         }),
       ]);
     }
@@ -50,7 +52,7 @@ async function extractButtons(page) {
       output.push([
         await page.screenshot({
           clip: rect,
-          path: `./images/buttons/${uuidv4()}.png`,
+          path: `./data/images/buttons/${uuidv4()}.png`,
         }),
       ]);
     }
@@ -63,10 +65,13 @@ async function get(urls = [], browser) {
   const results = { allButtons: {}, allLinks: {} };
   for (let urlIdx = 0; urlIdx < urls.length; urlIdx++) {
     const url = urls[urlIdx];
-    console.log(`Fetching ${urlIdx +1 }/${urls.length + 1} ${url}`);
+    log(`Fetching ${urlIdx +1 }/${urls.length + 1} ${url}`);
+    
     const page = await navigate(browser, url);
     results.allButtons[url] = await extractButtons(page);
     results.allLinks[url] = await extractLinks(page);
+
+    log(`. Done. Buttons: ${results.allButtons[url].length},  Links: ${results.allLinks[url].length}\n`);
     await page.close();
   }
   return results;

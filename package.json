@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "clean": "rm -rf ./data/links/*.png && rm -rf ./data/imags/*.png",
     "scrape": "cat urls.txt | xargs | sed 's/ / --url=/g' | xargs node index.js"
   },
   "repository": {
