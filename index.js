@@ -1,18 +1,23 @@
 import puppeteer from "puppeteer";
-import minimist from "minimist";  
+import minimist from "minimist";
 import { v4 as uuidv4 } from "uuid";
 
 const log = (str) => process.stdout.write(str);
 
 async function navigate(browser, url) {
   const page = await browser.newPage();
-  await page.goto(url, { waitUntil: "networkidle2" });
-  return page;
+  try {
+    await page.goto(url, { waitUntil: "networkidle2" });
+    return page;
+  } catch (e) {
+    if (page != null) page.close();
+    return null;
+  }
 }
 
 async function extractLinks(page) {
   // Extract the results from the page.
-  const anchors = await page.$$("a:not(:has(img))"); // text links...
+  const anchors = await page.$$("a:not(:has(img))"); // text links only
   const output = [];
 
   for (const anchor of anchors) {
@@ -20,8 +25,25 @@ async function extractLinks(page) {
     if (bounding != null) {
       const rect = await page.evaluate((el) => {
         const { x, y, width, height } = el.getBoundingClientRect();
-        return { x: x - 10, y: y - 10, width: width + 20, height: height + 20 };
+        const elements = document.elementsFromPoint(
+          x + (width / 2),
+          y + (height / 2)
+        );
+
+        // We only want the link where it is in the chanin of elements. (likely visibile from the current point.)
+        if (elements.indexOf(el) > -1) {
+          return {
+            x: x - 10,
+            y: y - 10,
+            width: width + 20,
+            height: height + 20,
+          };
+        }
+        // We ignore these later.
+        return { width: 0, height: 0 };
       }, anchor);
+
+      if (rect.width < 50 || rect.height < 50) continue; // skip small links (like the ones in the footer) - 50 because we added 20 to the width and height and 30 is probably the smallest link
 
       output.push([
         await page.screenshot({
@@ -37,7 +59,7 @@ async function extractLinks(page) {
 
 async function extractButtons(page) {
   const buttons = await page.$$(
-    "button, input[type='button'], input[type='submit'], input[type='reset'] "
+    "button, input[type='button'], input[type='submit'], input[type='reset']"
   );
   const output = [];
 
@@ -46,8 +68,25 @@ async function extractButtons(page) {
     if (bounding != null) {
       const rect = await page.evaluate((el) => {
         const { x, y, width, height } = el.getBoundingClientRect();
-        return { x: x - 10, y: y - 10, width: width + 20, height: height + 20  }; // w + h + 20 because x and y are -10
+        const element = document.elementFromPoint(
+          x + (width / 2),
+          y + (height / 2)
+        );
+
+        // We only want the button where it is clearly the top level element.
+        if (element == el) {
+          return {
+            x: x - 10,
+            y: y - 10,
+            width: width + 20,
+            height: height + 20,
+          };
+        }
+        // We ignore these later.
+        return { width: 0, height: 0 };
       }, button);
+
+      if (rect.width < 50 || rect.height < 50) continue; // skip small buttons (like the ones in the footer
 
       output.push([
         await page.screenshot({
@@ -65,14 +104,29 @@ async function get(urls = [], browser) {
   const results = { allButtons: {}, allLinks: {} };
   for (let urlIdx = 0; urlIdx < urls.length; urlIdx++) {
     const url = urls[urlIdx];
-    log(`Fetching ${urlIdx +1 }/${urls.length + 1} ${url}`);
-    
-    const page = await navigate(browser, url);
-    results.allButtons[url] = await extractButtons(page);
-    results.allLinks[url] = await extractLinks(page);
+    log(`Fetching ${urlIdx + 1}/${urls.length + 1} ${url}`);
 
-    log(`. Done. Buttons: ${results.allButtons[url].length},  Links: ${results.allLinks[url].length}\n`);
-    await page.close();
+    const page = await navigate(browser, url);
+
+    if (page != null) {
+      try {
+        results.allButtons[url] = await extractButtons(page);
+        results.allLinks[url] = await extractLinks(page);
+
+        log(
+          `. Done. Buttons: ${results.allButtons[url].length},  Links: ${results.allLinks[url].length}\n`
+        );
+      } catch (e) {
+        log(`. Failed.`);
+        console.log(`url ${url} failed with error ${e}`);
+      }
+      await page.close();
+    }
+    else {
+      log(`. Failed.`);
+      console.log(`url ${url} failed`);
+    }
+
   }
   return results;
 }
@@ -89,4 +143,4 @@ async function init(urls) {
 
 const args = minimist(process.argv.slice(2));
 
-init(args.url).then(console.log());
+init(typeof args.url == "string" ? [args.url] : args.url).then(console.log());
