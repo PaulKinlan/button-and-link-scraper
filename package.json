@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "clean": "rm -rf ./data/images/{buttons,text-links,image-links}/*.png",
-    "generate-zip": "zip -r ./data/images.zip ./data/images",
+    "generate-zip": "(cd ./data && zip -r images.zip ./images)",
     "sha": "find ./data/images -name '*.png' -type f | xargs -I {} shasum {} | sort > ./data/images.sha",
     "dedupe-images": "find ./data/images/buttons -name '*.png' -type f | xargs -I {} shasum {} | awk 'h[$1]{ printf \"%s \", $2; next }{ h[$1] = $2 }' | xargs rm",
     "scrape": "cat urls.txt | xargs | sed 's/ / --url=/g' | xargs node index.js"
