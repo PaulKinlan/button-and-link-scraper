@@ -7,7 +7,7 @@ const log = (str) => process.stdout.write(str);
 async function navigate(browser, url) {
   const page = await browser.newPage();
   try {
-    await page.goto(url, { waitUntil: "networkidle2" });
+    await page.goto(url, { waitUntil: "load" });
 
     // page.on("console", (msg) => console.log(msg.text()));
     page.addStyleTag({ content: "* { scroll-behavior: auto !important; }" });
@@ -77,6 +77,64 @@ async function extractLinks(page) {
   return output;
 }
 
+async function extractImageLinks(page) {
+  // Extract the results from the page.
+  const anchors = await page.$$("a:has(img)"); // image links only
+  const output = [];
+
+  for (const anchor of anchors) {
+    const bounding = await anchor.boundingBox();
+    if (bounding != null) {
+      const rect = await page.evaluate((el) => {
+        el.scrollIntoView({
+          behavior: "auto",
+          block: "center",
+          inline: "center",
+        });
+        const { x, y, width, height } = el.getBoundingClientRect();
+        const elements = document.elementsFromPoint(
+          x + width / 2,
+          y + height / 2
+        );
+
+        // We only want the link where it is in the chain of elements. (likely visible from the current point.)
+        if (elements.indexOf(el) > -1) {
+          return {
+            x: Math.max(window.scrollX + x - 10, 0),
+            y: Math.max(window.scrollY + y - 10, 0),
+            width: width + 20,
+            height: height + 20,
+          };
+        }
+        // We ignore these later.
+        return { width: 0, height: 0 };
+      }, anchor);
+
+      if (rect.width == 0 || rect.height == 0) continue; // skip small links (like the ones in the footer) - 50 because we added 20 to the width and height and 30 is probably the smallest link
+
+      const uuid = uuidv4();
+      output.push([
+        await page.screenshot({
+          clip: rect,
+          path: `./data/images/image-links/${uuid}.png`,
+        }),
+      ]);
+
+      await anchor.hover();
+
+      output.push([
+        await page.screenshot({
+          clip: rect,
+          path: `./data/images/image-links/${uuid}-hover.png`,
+        }),
+      ]);
+
+    }
+  }
+
+  return output;
+}
+
 async function extractButtons(page) {
   const buttons = await page.$$(
     "button, input[type='button'], input[type='submit'], input[type='reset']"
@@ -92,15 +150,13 @@ async function extractButtons(page) {
           inline: "center",
         }); // reduce the chance of position: fixed elements blocking this element.
         const { x, y, width, height } = el.getBoundingClientRect();
-        const element = document.elementFromPoint(
+        const elements = document.elementsFromPoint(
           x + width / 2,
           y + height / 2
         );
 
-        console.log(x, y, width, height, element, el);
-
-        // We only want the button where it is clearly the top level element.
-        if (element == el) {
+       // We only want the button where it is clearly the top level element.
+        if (elements.indexOf(el) > -1) {
           return {
             x: Math.max(window.scrollX + x - 10, 0),
             y: Math.max(window.scrollY + y - 10, 0),
@@ -137,7 +193,7 @@ async function extractButtons(page) {
 }
 
 async function get(urls = [], browser) {
-  const results = { allButtons: {}, allLinks: {} };
+  const results = { allButtons: {}, allLinks: {}, allImageLinks: {} };
   for (let urlIdx = 0; urlIdx < urls.length; urlIdx++) {
     const url = urls[urlIdx];
     log(`Fetching ${urlIdx + 1}/${urls.length} ${url}`);
@@ -148,9 +204,10 @@ async function get(urls = [], browser) {
       try {
         results.allButtons[url] = await extractButtons(page);
         results.allLinks[url] = await extractLinks(page);
+        results.allImageLinks[url] = await extractImageLinks(page);
 
         log(
-          `. Done. Buttons: ${results.allButtons[url].length},  Links: ${results.allLinks[url].length}\n`
+          `. Done. Buttons: ${results.allButtons[url].length}, Links: ${results.allLinks[url].length}, Image Links: ${results.allImageLinks[url].length}\n`
         );
       } catch (e) {
         log(`. Failed.`);
@@ -168,7 +225,7 @@ async function get(urls = [], browser) {
 async function init(urls) {
   const browser = await puppeteer.launch({ devtools: false });
 
-  const results = await get(urls, browser);
+  await get(urls, browser);
 
   browser.close();
 
