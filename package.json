@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "clean": "rm -rf ./data/images/{buttons,links}/*.png",
+    "clean": "rm -rf ./data/images/{buttons,links,image-links}/*.png",
     "sha": "find ./data/images -name '*.png' -type f | xargs -I {} shasum {} | sort > ./data/images.sha",
     "scrape": "cat urls.txt | xargs | sed 's/ / --url=/g' | xargs node index.js"
   },
