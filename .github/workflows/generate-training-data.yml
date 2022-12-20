@@ -12,4 +12,11 @@ jobs:
           cache: 'npm'
       - run: npm ci
       - run: npm run clean
+      - run: npm run scrape
+      - run: npm run dedupe-images
+      - run: npm run generate-zip
+      - uses: actions/upload-artifact@v3
+        with:
+          name: data
+          path: data/images.gz
       - run: echo Done
