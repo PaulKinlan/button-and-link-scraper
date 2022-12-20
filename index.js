@@ -123,7 +123,6 @@ async function extractImageLinks(page) {
         });
 
         if (isOccluded(el)) {
-          console.log("Element is occluded.");
           return { width: 0, height: 0 };
         }
 
@@ -216,7 +215,6 @@ async function extractButtons(page) {
         }); // reduce the chance of position: fixed elements blocking this element.
 
         if (isOccluded(el)) {
-          console.log("Element is occluded.");
           return { width: 0, height: 0 };
         }
 
