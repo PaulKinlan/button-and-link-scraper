@@ -1,0 +1,15 @@
+name: generate-training-data
+run-name: ${{ github.actor }} started a training sessions
+on: [push]
+jobs:
+  get-links-and-buttons:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: 'npm'
+      - run: npm ci
+      - run: npm clean
+      - run: echo Done
