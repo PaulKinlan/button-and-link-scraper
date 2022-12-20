@@ -9,7 +9,7 @@ async function navigate(browser, url) {
   try {
     await page.goto(url, { waitUntil: "load" });
 
-    // page.on("console", (msg) => console.log(msg.text()));
+    page.on("console", (msg) => console.log(msg.text()));
     page.addStyleTag({ content: "* { scroll-behavior: auto !important; }" });
 
     return page;
@@ -40,7 +40,8 @@ async function extractLinks(page) {
         );
 
         // We only want the link where it is in the chain of elements. (likely visible from the current point.)
-        if (elements.indexOf(el) == 0) { // > -1
+        if (elements.indexOf(el) == 0) {
+          // > -1
           return {
             x: Math.max(window.scrollX + x - 10, 0),
             y: Math.max(window.scrollY + y - 10, 0),
@@ -58,7 +59,7 @@ async function extractLinks(page) {
       output.push([
         await page.screenshot({
           clip: rect,
-          path: `./data/images/links/${uuid}.png`,
+          path: `./data/images/text-links/${uuid}.png`,
         }),
       ]);
 
@@ -67,10 +68,9 @@ async function extractLinks(page) {
       output.push([
         await page.screenshot({
           clip: rect,
-          path: `./data/images/links/${uuid}-hover.png`,
+          path: `./data/images/text-links/${uuid}-hover.png`,
         }),
       ]);
-
     }
   }
 
@@ -86,11 +86,47 @@ async function extractImageLinks(page) {
     const bounding = await anchor.boundingBox();
     if (bounding != null) {
       const rect = await page.evaluate((el) => {
+        function isOccluded(element) {
+          const { x, y, width, height } = element.getBoundingClientRect();
+
+          // We inset 5px to avoid the edges of the button.
+          const elementsTopLeft = document.elementsFromPoint(x + 5, y + 5);
+          const elementsTopRight = document.elementsFromPoint(
+            x + width - 5,
+            y + 5
+          );
+          const elementsBottomLeft = document.elementsFromPoint(
+            x + 5,
+            y + height - 5
+          );
+          const elementsBottomRight = document.elementsFromPoint(
+            x + width - 5,
+            y + height - 5
+          );
+
+          if (
+            elementsTopLeft.indexOf(element) == -1 ||
+            elementsTopRight.indexOf(element) == -1 ||
+            elementsBottomLeft.indexOf(element) == -1 ||
+            elementsBottomRight.indexOf(element) == -1
+          ) {
+            return true;
+          }
+
+          return false;
+        }
+
         el.scrollIntoView({
           behavior: "auto",
           block: "center",
           inline: "center",
         });
+
+        if (isOccluded(el)) {
+          console.log("Element is occluded.");
+          return { width: 0, height: 0 };
+        }
+
         const { x, y, width, height } = el.getBoundingClientRect();
         const elements = document.elementsFromPoint(
           x + width / 2,
@@ -128,7 +164,6 @@ async function extractImageLinks(page) {
           path: `./data/images/image-links/${uuid}-hover.png`,
         }),
       ]);
-
     }
   }
 
@@ -144,18 +179,55 @@ async function extractButtons(page) {
     const bounding = await button.boundingBox();
     if (bounding != null) {
       const rect = await page.evaluate((el) => {
+        function isOccluded(element) {
+          const { x, y, width, height } = element.getBoundingClientRect();
+
+          // We inset 5px to avoid the edges of the button.
+          const elementsTopLeft = document.elementsFromPoint(x + 5, y + 5);
+          const elementsTopRight = document.elementsFromPoint(
+            x + width - 5,
+            y + 5
+          );
+          const elementsBottomLeft = document.elementsFromPoint(
+            x + 5,
+            y + height - 5
+          );
+          const elementsBottomRight = document.elementsFromPoint(
+            x + width - 5,
+            y + height - 5
+          );
+
+          if (
+            elementsTopLeft.indexOf(element) == -1 ||
+            elementsTopRight.indexOf(element) == -1 ||
+            elementsBottomLeft.indexOf(element) == -1 ||
+            elementsBottomRight.indexOf(element) == -1
+          ) {
+            return true;
+          }
+
+          return false;
+        }
+
         el.scrollIntoView({
           behavior: "auto",
           block: "center",
           inline: "center",
         }); // reduce the chance of position: fixed elements blocking this element.
+
+        if (isOccluded(el)) {
+          console.log("Element is occluded.");
+          return { width: 0, height: 0 };
+        }
+
         const { x, y, width, height } = el.getBoundingClientRect();
+
         const elements = document.elementsFromPoint(
           x + width / 2,
           y + height / 2
         );
 
-       // We only want the button where it is clearly the top level element.
+        // We only want the button where it is clearly the top level element.
         if (elements.indexOf(el) > -1) {
           return {
             x: Math.max(window.scrollX + x - 10, 0),
@@ -223,7 +295,10 @@ async function get(urls = [], browser) {
 }
 
 async function init(urls) {
-  const browser = await puppeteer.launch({ devtools: false });
+  const browser = await puppeteer.launch({
+    devtools: false,
+    defaultViewport: null,
+  });
 
   await get(urls, browser);
 

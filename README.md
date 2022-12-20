@@ -11,11 +11,12 @@ Proposal
 I'm not too sure how to do this, but I think it would be something like:
 
 1. Get the data. What do buttons look like?
-  1. Get a list of links.
-  2. Get a list of buttons.
-  3. Get an image of each button.
-  4. Hand validate the images.
+   1. Get a list of text links, and a list of image links
+   2. Get a list of buttons.
+   3. Get an image of each button and each link.
+   4. Hand validate the images.
 2. Split the data into a training set and a test set.
 3. Train a model
 4. Evaluate the model.
-5. Deploy the model.
+5. ???
+6. Profit. Deploy the model.
