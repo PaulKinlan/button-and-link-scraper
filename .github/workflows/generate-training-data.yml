@@ -18,5 +18,5 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: data
-          path: data/images.gz
+          path: data/images.zip
       - run: echo Done
