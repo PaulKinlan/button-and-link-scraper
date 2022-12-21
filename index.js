@@ -274,7 +274,7 @@ async function get(urls = [], browser) {
       try {
         results.allButtons[url] = await extractButtons(page);
         results.allLinks[url] = await extractLinks(page);
-        results.allImageLinks[url] = await extractImageLinks(page);
+        //results.allImageLinks[url] = await extractImageLinks(page);
 
         log(
           `. Done. Buttons: ${results.allButtons[url].length}, Links: ${results.allLinks[url].length}, Image Links: ${results.allImageLinks[url].length}\n`
