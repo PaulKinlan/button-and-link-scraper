@@ -31,3 +31,6 @@
 [button]:https://getcssscan.com/css-buttons-examples
 [button]:https://tympanus.net/Development/ButtonHoverStyles/
 [button]:https://cssbuttons.app/
+[button]:https://www.w3schools.com/css/css3_buttons.asp
+[button]:https://www.w3schools.com/w3css/w3css_buttons.asp
+[button]:https://webdesignerwall.com/demo/css-buttons.html
