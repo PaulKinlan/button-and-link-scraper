@@ -23,8 +23,11 @@ https://classless-css-demo.deno.dev/tufte.html
 https://classless-css-demo.deno.dev/water.html
 https://classless-css-demo.deno.dev/wing.html
 https://classless-css-demo.deno.dev/writ.html
-https://www.bbc.co.uk/news
 https://tailwindui.com/components/application-ui/elements/buttons
 https://getbootstrap.com/docs/4.0/components/buttons/
 https://mui.com/material-ui/react-button/
 https://chakra-ui.com/docs/components/button
+https://demo.plantpot.works/2550/
+https://getcssscan.com/css-buttons-examples
+https://tympanus.net/Development/ButtonHoverStyles/
+https://cssbuttons.app/
