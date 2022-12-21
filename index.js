@@ -173,7 +173,7 @@ async function extractImageLinks(page) {
 
 async function extractButtons(page) {
   const buttons = await page.$$(
-    "button, input[type='button'], input[type='submit'], input[type='reset'], a[role=button]"
+    "button, input[type='button'], input[type='submit'], input[type='reset']"
   );
   const output = [];
   for (const button of buttons) {
