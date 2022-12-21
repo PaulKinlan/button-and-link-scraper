@@ -21,7 +21,7 @@ async function navigate(browser, url) {
 
 async function extractLinks(page) {
   // Extract the results from the page.
-  const anchors = await page.$$("a:not(:has(img))"); // text links only
+  const anchors = await page.$$("a:not([role=button]):not(:has(img))"); // text links only, that are not simulated buttons
   const output = [];
 
   for (const anchor of anchors) {
@@ -171,7 +171,7 @@ async function extractImageLinks(page) {
 
 async function extractButtons(page) {
   const buttons = await page.$$(
-    "button, input[type='button'], input[type='submit'], input[type='reset']"
+    "button, input[type='button'], input[type='submit'], input[type='reset'], a[role=button]"
   );
   const output = [];
   for (const button of buttons) {
