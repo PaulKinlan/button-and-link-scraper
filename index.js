@@ -21,7 +21,9 @@ async function navigate(browser, url) {
 
 async function extractLinks(page) {
   // Extract the results from the page.
-  const anchors = await page.$$("a:not([role=button]):not(:has(img))"); // text links only, that are not simulated buttons
+  const anchors = await page.$$(
+    "a:not([role=button]):not(:has(img)):not(:has(button))"
+  ); // text links only, that are not simulated buttons
   const output = [];
 
   for (const anchor of anchors) {
@@ -265,19 +267,27 @@ async function extractButtons(page) {
 async function get(urls = [], browser) {
   const results = { allButtons: {}, allLinks: {}, allImageLinks: {} };
   for (let urlIdx = 0; urlIdx < urls.length; urlIdx++) {
-    const url = urls[urlIdx];
+    let line = urls[urlIdx];
+    let [filter, url] = line.split(/:(.*)/)
+    // We should check for formatting errors.
+
+    let extract = { button: filter.includes("button"), link: filter.includes("link") };
+
     log(`Fetching ${urlIdx + 1}/${urls.length} ${url}`);
 
     const page = await navigate(browser, url);
 
     if (page != null) {
       try {
-        results.allButtons[url] = await extractButtons(page);
-        results.allLinks[url] = await extractLinks(page);
-        //results.allImageLinks[url] = await extractImageLinks(page);
+        if (extract.button) { 
+          results.allButtons[url] = await extractButtons(page);
+        }
+        if (extract.link) {
+          results.allLinks[url] = await extractLinks(page);
+        }
 
         log(
-          `. Done. Buttons: ${results.allButtons[url].length}, Links: ${results.allLinks[url].length}, Image Links: ${results.allImageLinks[url].length}\n`
+          `. Done. Buttons: ${results.allButtons[url]?.length || 0}, Links: ${results.allLinks[url]?.length || 0}\n`
         );
       } catch (e) {
         log(`. Failed.`);
