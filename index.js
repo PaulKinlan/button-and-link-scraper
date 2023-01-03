@@ -64,15 +64,6 @@ async function extractLinks(page) {
           path: `./data/images/text-links/${uuid}.png`,
         }),
       ]);
-
-      await anchor.hover();
-
-      output.push([
-        await page.screenshot({
-          clip: rect,
-          path: `./data/images/text-links/${uuid}-hover.png`,
-        }),
-      ]);
     }
   }
 
