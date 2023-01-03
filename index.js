@@ -173,20 +173,21 @@ async function extractButtons(page) {
       const rect = await page.evaluate((el) => {
         function isOccluded(element) {
           const { x, y, width, height } = element.getBoundingClientRect();
+          const padding = 10;
 
-          // We inset 5px to avoid the edges of the button.
-          const elementsTopLeft = document.elementsFromPoint(x + 5, y + 5);
+          // We inset {padding}px to avoid the edges of the button.
+          const elementsTopLeft = document.elementsFromPoint(x + padding, y + padding);
           const elementsTopRight = document.elementsFromPoint(
-            x + width - 5,
-            y + 5
+            x + width - padding,
+            y + padding
           );
           const elementsBottomLeft = document.elementsFromPoint(
-            x + 5,
-            y + height - 5
+            x + padding,
+            y + height - padding
           );
           const elementsBottomRight = document.elementsFromPoint(
-            x + width - 5,
-            y + height - 5
+            x + width - padding,
+            y + height - padding
           );
 
           if (
