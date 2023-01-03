@@ -48,3 +48,15 @@
 [button]:https://preview.colorlib.com/theme/bb/bootstrap-buttons-10/
 [button]:https://preview.colorlib.com/theme/bb/bootstrap-buttons-9/
 [button]:https://designseer.com/html/css-buttons/
+[button]:https://htmlcssfreebies.com/pheasant-demure-buttons/
+[button]:https://uiverse.io/buttons
+[button]:https://bulma.io/documentation/elements/button/
+[button]:https://purecss.io/buttons/
+[button]:https://nostalgic-css.github.io/NES.css/
+[button]:https://jdan.github.io/98.css/#button
+[button]:https://khang-nd.github.io/7.css/#button
+[button]:https://botoxparty.github.io/XP.css/#button
+[button]:https://www.patternfly.org/v4/components/button
+[button]:https://turretcss.com/element/button/
+[button]:https://turretcss.com/element/button-colors/
+[button]:https://turretcss.com/element/button-icon/
