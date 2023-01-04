@@ -59,7 +59,6 @@
 [button]:https://jdan.github.io/98.css/#button
 [button]:https://khang-nd.github.io/7.css/#button
 [button]:https://botoxparty.github.io/XP.css/#button
-[button]:https://www.patternfly.org/v4/components/button
 [button]:https://turretcss.com/element/button/
 [button]:https://turretcss.com/element/button-colors/
 [button]:https://turretcss.com/element/button-icon/
