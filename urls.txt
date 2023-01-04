@@ -1,7 +1,7 @@
-[button,link]:https://paul.kinlan.me/
-[button,link]:https://web.dev/
+[link]:https://paul.kinlan.me/
+[link]:https://web.dev/
 [button,link]:https://web.dev/learn/accessibility/
-[button,link]:https://hafodynys.com/
+[link]:https://hafodynys.com/
 [button,link]:https://developer.chrome.com/
 [button,link]:https://developer.chrome.com/docs/devtools/
 [button,link]:https://developer.google.com/
@@ -63,3 +63,4 @@
 [button]:https://turretcss.com/element/button/
 [button]:https://turretcss.com/element/button-colors/
 [button]:https://turretcss.com/element/button-icon/
+[link]:https://js.tensorflow.org/api/latest/
