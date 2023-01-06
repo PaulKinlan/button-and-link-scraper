@@ -5,10 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "clean": "rm -rf ./data/images/{buttons,text-links,image-links}/*.png",
+    "clean": "rm -rf ./data/images/{buttons,text-links}/*.{png,jpeg}",
     "generate-zip": "(cd ./data && tar -cvzf images.tgz ./images/)",
-    "sha": "find ./data/images -name '*.png' -type f | xargs -I {} shasum {} | sort > ./data/images.sha",
-    "dedupe-images": "find ./data/images/buttons -name '*.png' -type f | xargs -I {} shasum {} | awk 'h[$1]{ printf \"%s \", $2; next }{ h[$1] = $2 }' | xargs rm",
+    "sha": "find ./data/images -type f \\( -name '*.png' -o -name '*.jpeg' \\) | xargs -I {} shasum {} | sort > ./data/images.sha",
+    "dedupe-images": "find ./data/images -type f \\( -name '*.png' -o -name '*.jpeg' \\) | xargs -I {} shasum {} | awk 'h[$1]{ printf \"%s \", $2; next }{ h[$1] = $2 }' | xargs rm",
     "scrape": "cat urls.txt | xargs | sed 's/ / --url=/g' | xargs node index.js"
   },
   "repository": {
@@ -25,6 +25,7 @@
   "dependencies": {
     "minimist": "^1.2.7",
     "puppeteer": "^19.4.0",
+    "sharp": "^0.31.3",
     "uuid": "^9.0.0"
   }
 }
