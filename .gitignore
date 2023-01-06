@@ -107,4 +107,5 @@ dist
 
 data/images/buttons/*.png
 data/images/text-links/*.png
-data/images/image-links/*.png
+data/images/buttons/*.jpeg
+data/images/text-links/*.jpeg

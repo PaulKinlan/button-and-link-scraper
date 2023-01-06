@@ -62,4 +62,12 @@
 [button]:https://turretcss.com/element/button/
 [button]:https://turretcss.com/element/button-colors/
 [button]:https://turretcss.com/element/button-icon/
-[link]:https://js.tensorflow.org/api/latest/
+[link]:https://jakearchibald.com/2022/img-aspect-ratio/
+[link]:https://www.tensorflow.org/
+[button]:https://microsoftedge.github.io/Demos/pwamp/
+[button]:https://cdpn.io/pen/debug/powMQgx
+[button]:https://tympanus.net/Development/CreativeButtons/
+[button]:http://talkerscode.com/webtricks/demo/demo_create-fancy-animated-buttons-using-css3.php
+[button]:https://tympanus.net/Development/ButtonStylesInspiration/
+[button]:https://tympanus.net/Development/DistortedButtonEffects/
+[button]:https://getmdl.io/components/#buttons-section
