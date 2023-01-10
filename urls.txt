@@ -1,4 +1,10 @@
 [link]:https://paul.kinlan.me/
+[link]:https://en.wikipedia.org/wiki/Main_Page
+[link]:https://fr.wikipedia.org/wiki/Main_Page
+[link]:https://ja.wikipedia.org/wiki/
+[link]:https://pt.wikipedia.org/wiki/
+[link]:https://uk.wikipedia.org/wiki/
+[link]:https://ru.wikipedia.org/wiki/
 [link]:https://web.dev/
 [button,link]:https://web.dev/learn/accessibility/
 [link]:https://hafodynys.com/

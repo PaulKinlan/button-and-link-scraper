@@ -68,7 +68,6 @@ async function extractLinks(page) {
       if (rect.width == 0 || rect.height == 0) continue; // skip small links (like the ones in the footer) - 50 because we added 20 to the width and height and 30 is probably the smallest link
 
       const uuid = uuidv4();
-
       const screenshot = await page.screenshot({
         clip: rect,
       });
@@ -156,7 +155,6 @@ async function extractButtons(page) {
       if (rect.width == 0 || rect.height == 0) continue; // skip small buttons (like the ones in the footer
 
       const uuid = uuidv4();
-
       const screenshot = await page.screenshot({
         clip: rect,
       });
@@ -178,12 +176,9 @@ async function extractButtons(page) {
 }
 
 async function get(urls = [], browser) {
-  const results = { allButtons: {}, allLinks: {}, allImageLinks: {} };
   for (let urlIdx = 0; urlIdx < urls.length; urlIdx++) {
     let line = urls[urlIdx];
     let [filter, url] = line.split(/:(.*)/);
-    // We should check for formatting errors.
-
     let extract = {
       button: filter.includes("button"),
       link: filter.includes("link"),
@@ -195,16 +190,18 @@ async function get(urls = [], browser) {
 
     if (page != null) {
       try {
+        let buttons, links;
+
         if (extract.button) {
-          results.allButtons[url] = await extractButtons(page);
+          buttons = await extractButtons(page);
         }
         if (extract.link) {
-          results.allLinks[url] = await extractLinks(page);
+          links = await extractLinks(page);
         }
 
         log(
-          `. Done. Buttons: ${results.allButtons[url]?.length || 0}, Links: ${
-            results.allLinks[url]?.length || 0
+          `. Done. Buttons: ${buttons.length || 0}, Links: ${
+            links.length || 0
           }\n`
         );
       } catch (e) {
@@ -217,7 +214,7 @@ async function get(urls = [], browser) {
       console.log(`url ${url} failed`);
     }
   }
-  return results;
+  return;
 }
 
 async function init(urls) {
